@@ -10,6 +10,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 export default class VehicleList extends React.Component {
 
   state = {
+    city_value:"Los Angelos",
     vehicles: [],
     vehicle_detail:[],
     order_detail:[],
@@ -19,21 +20,43 @@ export default class VehicleList extends React.Component {
     payment_choice:1,
     show_order:true,
   }
+
   componentDidMount() {
+    console.log(this.state.city_value)
     axios.get(`/api/vehicles/`)
     .then(response => {
-    const posts = response.data;
-    this.setState ({ vehicles: posts.data});
+    console.log(response.data.data)
+
+    const posts = response.data.data.filter(home => home.city.includes(this.state.city_value));
+    console.log(posts);
+    //this.setState ({ vehicles: posts.data});
+    this.setState ({ vehicles: posts});
     this.setState ({ vehicle_detail:[]});
     })
   }
+  refreshList(){
+    //console.log(this.state.city_value);
+    axios.get(`/api/vehicles/`)
+    .then(response => {
+    console.log(response.data.data)
+    //console.log(this.state.city_value)
+
+    const posts = response.data.data.filter(home => home.city.includes(this.state.city_value));
+    console.log(posts);
+    //this.setState ({ vehicles: posts.data});
+    this.setState ({ vehicles: posts});
+    this.setState ({ vehicle_detail:[]});
+    })
+
+  }
+
   handleSubmit = (id) => {
 
     if (id) {
       axios
         .get(`/api/vehicles/${id}/`)
         .then(response => {
-        const posts = response.data;
+        const posts = response.data; 
         this.setState ({ vehicle_detail: posts.data});
         this.setState ({ vehicles: []});
         
@@ -55,7 +78,12 @@ export default class VehicleList extends React.Component {
   handleEnd = event => {
     this.setState({ end_date: event.target.value });
   }
+  handleCity = event => {
+    console.log(event.target.value)
+    this.setState({city_value: event.target.value});
+    console.log(this.state.city_value)
   
+  }
   handleOrder = event => {
     event.preventDefault();
     const date1 = moment(this.state.start_date);
@@ -97,7 +125,7 @@ export default class VehicleList extends React.Component {
     })
       .then(res => {
         const posts = res.data;
-        this.setState ({ invoice_detail: posts});
+        this.setState ({ invoice_detail: [posts]});
         this.setState ({ order_detail:[]});
         this.handlePayment(res.data.id,res.data.amount);
         console.log(res);
@@ -119,7 +147,17 @@ export default class VehicleList extends React.Component {
       .then(res => {
       const posts = res.data;
       this.setState ({ pay_detail: posts});
-      this.setState({pay_sum:[[this.state.invoice_detail].concat(this.state.pay_detail.cardno)]});
+      console.log(res);
+      console.log(res.data);
+      })
+  }
+  changeVehicle = (vehicle_id) => {
+    
+    /* NOT Finished)*/
+    axios.post(`/api/orders/payment/`, {
+      id:1,
+    })
+      .then(res => {
       console.log(res);
       console.log(res.data);
       })
@@ -131,6 +169,14 @@ export default class VehicleList extends React.Component {
       
       <div className="vehicles">
         <h1>Vehicles Available</h1>
+        
+        <label>Search the city:
+              <input type="text" name="City" onChange={this.handleCity.bind(this)}/>
+          </label> 
+          <Button  variant="secondary" onClick={this.refreshList.bind(this)}>Search</Button>
+              
+     
+          
         <p>Vehicle List</p>
         <Row className="justify-content-center" md="auto">
         {this.state.vehicles.map(home => <Card style={{ width: '16rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}><Card.Body><Card.Title>{home.make} {home.model}</Card.Title><Card.Subtitle className="mb-2 text-muted">{home.make_year}</Card.Subtitle>
@@ -200,18 +246,18 @@ export default class VehicleList extends React.Component {
           </Card>)}
           </Row>
 
-          <h1>View Payemnt</h1>
-          <p>Payment Detail</p>
+          <h1>View Invoice</h1>
+          <p>Invoice Detail</p>
           <Row className="justify-content-center" md="auto">
-          {this.state.pay_sum.map(home => 
-          <Card style={{ width: '16rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}>
+          {this.state.invoice_detail.map(home => 
+          <Card id={home.id} style={{ width: '16rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}>
             <Card.Body>
-              <Card.Title>{home.id} </Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">{home.order_id}</Card.Subtitle>
-              <Card.Text>
-                VIN Number: {home.invoice_date}          LPN Number: {home.amount}</Card.Text>
-                <Button id={home.id} variant="secondary" onClick={() => this.handleSubmit(home.id)}>View</Button>
-                
+              <Card.Title>Invoice ID: {home.id} </Card.Title>
+              <Card.Subtitle className="mb-2 text-muted">Order #{home.order_id}</Card.Subtitle>
+              <Card.Text>Invoice date: {home.invoice_date} </Card.Text>
+              <Card.Text> Invoice Amount: {home.amount}</Card.Text>
+              <Card.Text>You payment is successful</Card.Text>
+              <Button id={home.id} variant="secondary" onClick={() => this.refreshList()}>Back</Button>
             </Card.Body>
           </Card>)}
           </Row>

@@ -36,7 +36,7 @@ export default class VehicleList extends React.Component {
   }
   refreshList(){
     //console.log(this.state.city_value);
-    axios.get(`/api/vehicles/`)
+    axios.get(`/api/vehicles/vehicle/`)
     .then(response => {
     console.log(response.data.data)
     //console.log(this.state.city_value)
@@ -45,7 +45,7 @@ export default class VehicleList extends React.Component {
     console.log(posts);
     //this.setState ({ vehicles: posts.data});
     this.setState ({ vehicles: posts});
-    this.setState ({ vehicle_detail:[]});
+    this.setState ({ invoice_detail:[]});
     })
 
   }
@@ -179,9 +179,9 @@ export default class VehicleList extends React.Component {
           
         <p>Vehicle List</p>
         <Row className="justify-content-center" md="auto">
-        {this.state.vehicles.map(home => <Card style={{ width: '16rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}><Card.Body><Card.Title>{home.make} {home.model}</Card.Title><Card.Subtitle className="mb-2 text-muted">{home.make_year}</Card.Subtitle>
-            <Card.Text>
-              VIN Number: {home.VIN}          LPN Number: {home.LPN}</Card.Text>
+        {this.state.vehicles.map(home => <Card style={{ width: '18rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}><Card.Body><Card.Title>{home.make} {home.model}</Card.Title><Card.Subtitle className="mb-2 text-muted">{home.make_year}</Card.Subtitle>
+            <Card.Text>VIN Number: {home.VIN}  </Card.Text>        
+            <Card.Text>LPN Number: {home.LPN}</Card.Text>
               <Button id={home.id} variant="secondary" onClick={() => this.handleSubmit(home.id)}>View</Button>
               
           </Card.Body>
@@ -192,14 +192,16 @@ export default class VehicleList extends React.Component {
         <h1>View Vehicle</h1>
         <p>Vehicle Detail</p>
           <Row className="justify-content-center" md="auto">
-          {this.state.vehicle_detail.map(home => <Card style={{ width: '16rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}><Card.Body><Card.Title>{home.make} {home.model}</Card.Title><Card.Subtitle className="mb-2 text-muted">{home.make_year}</Card.Subtitle>
+          {this.state.vehicle_detail.map(home => <Card style={{ width: '18rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}>
+            <Card.Body><Card.Title>{home.make} {home.model}</Card.Title><Card.Subtitle className="mb-2 text-muted">{home.make_year}</Card.Subtitle>
               <Card.Text>
-                VIN Number: {home.VIN}          LPN Number: {home.LPN}</Card.Text>
+                VIN Number: {home.VIN}  </Card.Text>    <Card.Text>    LPN Number: {home.LPN}</Card.Text>
                 <Card.Text>
                 Class: {home.class_type}  </Card.Text>
                 <Card.Text>
                 Daily Rate: {home.daily_rate}  </Card.Text>
                 <Card.Text> Extra Rate: {home.extra_rate}  </Card.Text>
+                <Card.Text> Pick up Location: {home.street},{home.city},{home.state},{home.zipcode} </Card.Text>
                 <form id = {home.id} name={home.daily_rate} onSubmit={this.handleOrder}>
                   <label>Start date
                     <input type="text" name="start_date" onChange={this.handleStart} />
@@ -217,7 +219,7 @@ export default class VehicleList extends React.Component {
           <h1>View Order</h1>
           <p>Order Detail</p>
           <Row className="justify-content-center" md="auto">
-          {this.state.order_detail.map(home => <Card style={{ width: '16rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}>
+          {this.state.order_detail.map(home => <Card style={{ width: '18rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}>
             <Card.Body>
               <Card.Title>{home.cust_id}</Card.Title>
               <Card.Subtitle className="mb-2 text-muted">{home.make_year}</Card.Subtitle>
@@ -250,7 +252,7 @@ export default class VehicleList extends React.Component {
           <p>Invoice Detail</p>
           <Row className="justify-content-center" md="auto">
           {this.state.invoice_detail.map(home => 
-          <Card id={home.id} style={{ width: '16rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}>
+          <Card id={home.id} style={{ width: '18rem',background: 'linear-gradient( #e1f8dc, #caf1de)'}}>
             <Card.Body>
               <Card.Title>Invoice ID: {home.id} </Card.Title>
               <Card.Subtitle className="mb-2 text-muted">Order #{home.order_id}</Card.Subtitle>
